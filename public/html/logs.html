@@ -1,5 +1,14 @@
-<ul>
-   <li ng-repeat="item in data">
-   	 {{item}}
-   </li>
-</ul>
+<div class="row" style="padding-top: 30px;">
+	<div class="col-md-offset-1 col-md-9" style="font-size: 18px;">
+		Showing real time logs from file "<b>{{fileName}}</b>"
+	</div>
+	<div class="col-md-2">
+		<button class="btn btn-success btn-md" type="button" ng-click="stopWatching()">STOP</button>
+	</div>
+</div>
+
+<div class="row" style="padding-top: 10px;">
+	<div ng-repeat="item in data track by item.time" class="col-md-offset-1 col-md-10" style="font-size: 12px;">
+		{{item.matter}}
+	</div>
+</div>

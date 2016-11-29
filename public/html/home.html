@@ -1,1 +1,11 @@
-<a href="#/logs">See logs</a>
+<div class="row" style="padding-top: 25%;">
+	<div class="col-md-offset-2 col-md-1" style="font-size: 24px;">
+		tail -f
+	</div>
+	<div class="col-md-5">
+		<input placeholder="/PATH /TO /FILE /ON /SERVER /MACHINE" class="form-control" type="text" ng-model="fileName"/>
+	</div>
+	<div class="col-md-2">
+		<button class="btn btn-success btn-md" type="button" ng-click="startWatching()">START</button>
+	</div>
+</div>
