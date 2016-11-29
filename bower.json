@@ -18,6 +18,7 @@
   "dependencies": {
     "angular-socket-io": "~0.7.0",
     "bootstrap": "~3.3.7",
-    "angular-ui-notification": "~0.2.0"
+    "angular-ui-notification": "~0.2.0",
+    "angular-scroll-glue": "~2.1.0"
   }
 }

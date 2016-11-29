@@ -1,4 +1,5 @@
 var fs = require('fs');
+var async = require('async');
 var buffer = new Buffer(1024);
 
 /**
@@ -7,41 +8,72 @@ var buffer = new Buffer(1024);
  * @param2: <Object> , Of class Socket
  */
 var watchFile = function (fileName, socket) {
-    console.log('Watcher started for: ', fileName);
-    socket.emit('watchBegins', {fileName: fileName});
 
-	//Start watching a file
-	fs.watchFile(fileName, { persistent: true, interval: 2007 }, function(curr, prev){
-		//curr and prev are the File STATS object where 'curr' is new state of the file and 'prev' is old state.
-		var prevModifiedTime = new Date(prev.mtime).getTime();
-		var currModifiedTime = new Date(curr.mtime).getTime();
+	async.waterfall([
+		   //check whether the file exists or not
+		   function(next) {
+		   	    fs.stat(fileName, function(err, stat) {
+				    if(err == null) {
+				        console.log('File exists');
+				        next();
+				    } 
+				    else {// file does not exist
+				    	next(err);
+				    }
+				});
+		   },
 
-		if(currModifiedTime > prevModifiedTime) { //means file has been actually modified (not just accessed)
+           //Start watching file
+		   function(next){
+		   	    console.log('Watcher started for: ', fileName);
+			    socket.emit('watchBegins', {fileName: fileName});
 
-			//Open the file in read mode
-			fs.open(fileName, 'r', (err, fd) => {
-			   if(err) {
-			   	   console.log('ERROR occurred while opening file in read mode. DETAILED err: ', err);
-			   	   socket.emit('error', {matter: err});
-			   }
-			   else {
-			   	   var position = prev.size; //Always start reading the file from the point which happened to be the file end in old state
-			   	   //Read file form last
-			   	   fs.read(fd, buffer, 0, buffer.length, position, function(err, bytesRead) {
-			   	      if(err) {
-			   	         console.log('ERROR occurred while reading file. DETAILED err: ', err);
-			   	         socket.emit('error', {matter: err});
-			   	      }
-			   	      if(bytesRead > 0){ //If there is something to broadcast
-			   	      	 var newData = buffer.slice(0, bytesRead).toString();
-				         socket.emit('fileChanged', {matter: newData, time: new Date().getTime()}); //Broadcast it
-				      }
-			   	      fs.close(fd);  //close the file
-			   	   });
-			   }
-			});
-		} 
-	});
+				//Start watching a file
+				fs.watchFile(fileName, { persistent: true, interval: 1007 }, function(curr, prev){
+					//curr and prev are the File STATS object where 'curr' is new state of the file and 'prev' is old state.
+					var prevModifiedTime = new Date(prev.mtime).getTime();
+					var currModifiedTime = new Date(curr.mtime).getTime();
+
+					if(currModifiedTime > prevModifiedTime) { //means file has been actually modified (not just accessed)
+
+						//Open the file in read mode
+						fs.open(fileName, 'r', (err, fd) => {
+						   if(err) {
+						   	   console.log('ERROR occurred while opening file in read mode. DETAILED err: ', err);
+						   	   socket.emit('error', {matter: err});
+						   }
+						   else {
+						   	   var position = prev.size; //Always start reading the file from the point which happened to be the file end in old state
+						   	   //Read file form last
+						   	   fs.read(fd, buffer, 0, buffer.length, position, function(err, bytesRead) {
+						   	      if(err) {
+						   	         console.log('ERROR occurred while reading file. DETAILED err: ', err);
+						   	         socket.emit('error', {matter: err});
+						   	      }
+						   	      if(bytesRead > 0){ //If there is something to broadcast
+						   	      	 var newData = buffer.slice(0, bytesRead).toString();
+							         socket.emit('fileChanged', {matter: newData, time: new Date().getTime()}); //Broadcast it
+							      }
+						   	      fs.close(fd);  //close the file
+						   	   });
+						   }
+						});
+					} 
+				});
+                next();
+		   }
+		],
+		function (err){
+			if(err) {
+				if(err.code == 'ENOENT') {    
+			        socket.emit('fileNotFound', {matter: 'Specified file is not present at the path'});
+				} 
+			    else {
+			        socket.emit('error', err);
+			    }
+			}
+	    }
+	);
 }
 
 /**

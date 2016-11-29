@@ -1,7 +1,7 @@
 //This file contains all of the anugular code required for the app
 
 //Bootstrapping the angular app
-angular.module('app', ['ngRoute', 'ui-notification', 'btford.socket-io'])
+angular.module('app', ['ngRoute', 'ui-notification', 'btford.socket-io', 'luegg.directives'])
   .config(['$routeProvider', 'NotificationProvider', function($routeProvider, NotificationProvider) {
      NotificationProvider.setOptions({
         delay: 10000,
@@ -31,7 +31,8 @@ angular.module('app').factory('socketService', function (socketFactory) {
   var socketObject =  socketFactory({
     ioSocket: socket
   });
-  socketObject.forward(['fileChanged', 'fileRenamed', 'watchBegins', 'watchEnds', 'error']);
+  //list out the events which you want to delegate to the $scope of angular
+  socketObject.forward(['fileChanged', 'watchBegins', 'watchEnds', 'fileNotFound', 'error']);
   return socketObject;
 });
 
@@ -47,7 +48,13 @@ angular.module('app').controller('AppController', ['$scope', '$location', 'socke
 
     //Will get invoked whenever some error occurs on backend
     $scope.$on('socket:error', function (event, data) {
-       $scope.data.push(data);
+       Notification.error('Some unexpected error occurred. Try reloading the page.');
+       //$scope.data.push(data);
+    });
+
+    //Will get invoked when specified file is not found on path
+    $scope.$on('socket:fileNotFound', function (event, data) {
+       Notification.error(data.matter);
     });
 
     //Will get invoked whenever some changes occurs on the file being watched 
@@ -61,9 +68,8 @@ angular.module('app').controller('AppController', ['$scope', '$location', 'socke
        $location.path('/logs');
     });
 
-    //Will get invoked when the watching starts for a file
+    //Will get invoked when the watch ends for a file
     $scope.$on('socket:watchEnds', function (event, data){
-       // $location.path('/');
        $location.url('/')
     });
 
