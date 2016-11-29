@@ -16,6 +16,9 @@ A log watching solution through web (similar to the tail -f command in UNIX)
    ![home page](https://s3.ap-south-1.amazonaws.com/ohsahi/s2.png)
    
 7. Click on 'START' button to see the real time streaming of the logs 
-   ![home page](https://s3.ap-south-1.amazonaws.com/ohsahi/s3.png)
-   ![home page](https://s3.ap-south-1.amazonaws.com/ohsahi/s4.png)
-   ![home page](https://s3.ap-south-1.amazonaws.com/ohsahi/s5.png)
+   ![logs page](https://s3.ap-south-1.amazonaws.com/ohsahi/s3.png)
+   ![logs page](https://s3.ap-south-1.amazonaws.com/ohsahi/s4.png)
+   ![logs page](https://s3.ap-south-1.amazonaws.com/ohsahi/s5.png)
+   
+8. To stop click the 'STOP' button and the watching of file will actually be stopped and you will be redirected to home page again
+   ![home page](https://s3.ap-south-1.amazonaws.com/ohsahi/s1.png)
