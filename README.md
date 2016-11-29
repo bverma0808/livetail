@@ -4,7 +4,7 @@ A log watching solution through web (similar to the tail -f command in UNIX)
 ### Prerequisites:
 1. Node.Js
 
-### How to setup
+### How to setup:
 1. Do git clone and cd into project directory
 2. ```npm install```
 3. ```bower install```
@@ -22,3 +22,6 @@ A log watching solution through web (similar to the tail -f command in UNIX)
    
 8. To stop click the 'STOP' button and the watching of file will actually be stopped and you will be redirected to home page again
    ![home page](https://s3.ap-south-1.amazonaws.com/ohsahi/s1.png)
+
+###Next Version:
+Next version would contain the option to specify the number of lines in 'tail'command
